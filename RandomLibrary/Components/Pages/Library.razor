@@ -1,0 +1,122 @@
+﻿@page "/library"
+@using System.Text.Json
+@using RandomLibrary.Components.Shared
+@using RandomLibrary.Utils
+
+@inject LibraryStore store
+@inject PreferencesStore prefs
+
+<BookDetailsDialog book="detailBook" />
+
+@if (books.Count > 0)
+{
+    <MudGrid Spacing="1" Justify="Justify.SpaceEvenly">
+        @foreach (var book in books)
+        {
+            <MudItem Style="max-width:50%">
+                <MudCard Outlined="@showOutline(book)" Style="@outlineStyle(book)">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.subtitle1">@book.title</MudText>
+                            <MudText Typo="Typo.subtitle2">@book.authors[0]</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardActions>
+                        @if (!book.isRead)
+                        {
+                            <MudTooltip Text="Mark as read">
+                                <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" OnClick="@(_ => OnMarkBookComplete(book.id))" />
+                            </MudTooltip>
+                        } 
+                        else 
+                        {
+                            <MudTooltip Text="Unmark as read">
+                                <MudIconButton Icon="@Icons.Material.Filled.Repeat" Color="Color.Secondary" OnClick="@(_ => OnMarkBookIncomplete(book.id))" />
+                            </MudTooltip>
+                        }
+                        <MudTooltip Text="Show more info">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Primary" OnClick="@(_ => ShowDetails(book))"/>
+                        </MudTooltip>
+                        <MudSpacer/>
+                        <MudTooltip Text="Delete book from library">
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(_ => OnRemoveBook(book.id))" />
+                        </MudTooltip>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+    List<Book> books = [];
+    string currentId = String.Empty;
+
+    Book? detailBook;
+
+    string outlineStyle(Book b) => "border-color: " + (b.isRead ? Colors.Green.Default : Colors.Blue.Default);
+    bool showOutline(Book b) => b.isRead  || b.id == currentId;
+
+    protected override void OnInitialized()
+    {
+        books = store.GetAllBooks();
+
+        currentId = prefs.Get<string>("currentBook");
+
+        store.LibraryUpdated += OnLibUpdated;
+    }
+
+    private void OnLibUpdated()
+    {
+        books = store.GetAllBooks();
+
+        StateHasChanged();
+    }
+
+    private void OnMarkBookComplete(string id)
+    {
+        store.MarkBookRead(id);
+
+        UpdatePrefs(id);
+    }
+
+    private void OnMarkBookIncomplete(string id)
+    {
+        store.MarkBookUnread(id);
+
+        UpdatePrefs(id);
+    }
+
+    private void OnRemoveBook(string id)
+    {
+        store.RemoveBook(id);
+
+        UpdatePrefs(id);
+    }
+
+    private void ShowDetails(Book book)
+    {
+        detailBook = book;
+    }
+
+    private void UpdatePrefs(string id)
+    {
+        // book is the current random one
+        if (prefs.Get<string>("currentBook") == id)
+        {
+            Book? newRandBook = store.GetRandomBook();
+            if (newRandBook is not null)
+            {
+                prefs.Set("currentBook", newRandBook.id);
+                currentId = newRandBook.id;
+            }
+            else
+            {
+                prefs.Set("currentBook", "");
+                currentId = "";
+            }
+        }
+    }
+}

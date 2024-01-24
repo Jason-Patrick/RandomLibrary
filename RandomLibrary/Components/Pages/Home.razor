@@ -1,0 +1,76 @@
+﻿
+@page "/"
+@using System.Text.Json
+@using RandomLibrary.Components.Shared
+@using RandomLibrary.Utils
+
+@inject LibraryStore store
+@inject PreferencesStore prefs;
+
+
+@if (book is not null)
+{
+    <BookCard book="book"> 
+        <CardActions>
+            <MudButton Color="Color.Success" OnClick="OnMarkBookComplete">Complete!</MudButton>
+            <MudSpacer/>
+            <MudButton Color="Color.Error" OnClick="OnReadLater">Read later</MudButton>
+        </CardActions>
+    </BookCard>
+} else
+{
+    <MudContainer MaxWidth="MaxWidth.Small">
+        <MudText Align="Align.Center" Typo="Typo.h1">No books found!</MudText>
+    </MudContainer>
+}
+
+
+@code {
+    Book? book;
+
+    protected override void OnInitialized()
+    {
+        var bookId = prefs.Get<string>("currentBook");
+        var _book = store.GetBook(bookId);
+
+        if (bookId == String.Empty || _book == null)
+        {
+            // no prior current book set or set id is no longer valid
+            if (store.GetAllBooks().Count == 0) return;
+
+            GetNewBook();
+        }
+        book = _book;
+
+        store.LibraryUpdated += OnLibUpdated;
+    }
+
+    private void OnLibUpdated()
+    {
+        StateHasChanged();
+    }
+
+    private void OnMarkBookComplete()
+    {
+        store.MarkBookRead(book!.id);
+        GetNewBook();
+    }
+
+    private void OnReadLater()
+    {
+        GetNewBook();
+    }
+
+    private void GetNewBook()
+    {
+        Book? newRandBook = store.GetRandomBook();
+        book = newRandBook;
+        if (newRandBook is not null)
+        {
+            prefs.Set("currentBook", newRandBook.id);
+        } else
+        {
+            prefs.Set("currentBook", "");
+        }
+    }
+}

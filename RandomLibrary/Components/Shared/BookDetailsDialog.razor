@@ -1,0 +1,39 @@
+﻿@using System.Text.Json;
+@using RandomLibrary.Utils;
+
+@inject LibraryStore store
+
+@* <MudOverlay @bind-Visible="isOpen" DarkBackground="true" Absolute="true" /> *@
+@if (book != null)
+{
+    <BookCard book="book" classes="absolute z-100 mx-3 my-5 py-5 object-center" >
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error"/>
+        </CardHeaderActions>
+    </BookCard>
+}
+
+@code {
+    [Parameter] public Book? book { get; set; }
+
+    private bool isOpen { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (book == default)
+        {
+            isOpen = false;
+        }
+        else
+        {
+            isOpen = true;
+        }
+    }
+
+    private void OnClose()
+    {
+        book = null;
+        isOpen = false;
+    }
+}

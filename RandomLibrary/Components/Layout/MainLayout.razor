@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+
+@using RandomLibrary.Components.Shared
+
+<div class="page">
+    <MudThemeProvider IsDarkMode="true"/>
+    <MudDialogProvider />
+    <MudSnackbarProvider />
+    <MudLayout>
+        <MudAppBar  Color="Color.Primary" Fixed="false" Elevation="1" >
+            <MudText Typo="Typo.h5">Random Library</MudText>
+        </MudAppBar>
+        <MudPaper Elevation="4">
+            <MudButtonGroup class="d-flex flex-grow-1" Color="Color.Secondary" Variant="Variant.Outlined" Size="Size.Large" >
+                <MudButton StartIcon="@Icons.Material.Filled.MenuBook" Size="Size.Large" FullWidth="true" Href="/">Current Book</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.LibraryBooks" Size="Size.Large" FullWidth="true" Href="/library">Library</MudButton>
+            </MudButtonGroup>
+
+        </MudPaper>
+        
+        <Scanner />
+        <MudMainContent Class="pt-16 px-8">
+            @Body
+        </MudMainContent>
+    </MudLayout>
+
+</div>
+
+@code {
+    bool open = false;
+    void ToggleDrawer()
+    {
+        open = !open;
+    }
+}

@@ -1,0 +1,45 @@
+﻿@using RandomLibrary.Utils
+@if (book != null)
+{
+    <MudCard Class=@classes>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5">@book.title</MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        @String.Join(", ", book.authors)
+                </MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                @CardHeaderActions
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudExpansionPanels Class="mb-2">
+                <MudExpansionPanel Text="Description">
+                    <MudText Typo="Typo.body2">@book.description</MudText>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+            <MudText Typo="Typo.subtitle1"><b>Category:</b> @String.Join(", ", book.categories)</MudText>
+            <MudText Typo="Typo.subtitle1"><b>Page Count:</b> @book.pageCount</MudText>
+            <MudText Typo="Typo.subtitle1"><b>Language:</b> @book.language</MudText>
+            @if (ShowAllInfo){
+                <MudText Typo="Typo.subtitle1"><b>Publisher:</b> @book.publisher</MudText>
+                <MudText Typo="Typo.subtitle1"><b>Published Date:</b> @book.publishedDate</MudText>
+            }
+        </MudCardContent>
+        <MudCardActions>
+            @CardActions
+        </MudCardActions>
+    </MudCard>
+}
+
+@code {
+    [Parameter] public Book? book { get; set; }
+    [Parameter] public RenderFragment? CardActions { get; set; }
+    [Parameter] public RenderFragment? CardHeaderActions { get; set; }
+
+    [Parameter] public bool ShowAllInfo { get; set; }
+
+    [Parameter]
+    public string? classes { get; set; } = "w-100 mx-0";
+}

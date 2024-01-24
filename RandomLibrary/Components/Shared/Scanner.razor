@@ -1,0 +1,36 @@
+﻿@using CommunityToolkit.Maui.Views;
+@using System.Text.Json
+@using RandomLibrary.Utils
+
+@inject HttpClient Http
+
+<MudFab Style="position:fixed; bottom:20px;right:10px" Color="Color.Success" Size="Size.Large" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenPopup" />
+<AddBookDialog book="book"/>
+
+@code {
+    private BookResp? book = null;
+
+    private async void OpenPopup()
+    {
+        if (App.Current is not null)
+        {
+            var result = await App.Current.MainPage!.ShowPopupAsync(new BarcodeReaderPopup());
+            if (result is not null)
+            {
+                GetBook(result.ToString() ?? string.Empty);
+            }
+        }
+    }
+
+    private async void GetBook(string isbn)
+    {
+        var resp = await Http.GetAsync("https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn);
+        if (resp.IsSuccessStatusCode)
+        {
+            string content = await resp.Content.ReadAsStringAsync();
+            book = JsonSerializer.Deserialize<BookResp>(content);
+            StateHasChanged();
+        }
+    }
+
+}

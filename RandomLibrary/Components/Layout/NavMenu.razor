@@ -1,0 +1,10 @@
+﻿<MudDrawer @bind-Open="@open" Elevation="1">
+    <MudNavMenu>
+        <MudNavLink Href="/">Home</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
+
+
+@code {
+    [Parameter] public bool open { get; set; }
+}

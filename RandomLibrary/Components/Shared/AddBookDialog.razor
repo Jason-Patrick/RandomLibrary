@@ -1,0 +1,77 @@
+﻿@using System.Text.Json;
+@using RandomLibrary.Utils;
+
+@inject LibraryStore store
+
+<MudOverlay @bind-Visible="isOpen"  DarkBackground="true" Absolute="true" /> 
+@if (book != null)
+{
+    @foreach (var bookitem in book.items)
+    {
+        <MudCard Class="absolute z-100 mx-3 my-5 py-5 object-center ">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5">@bookitem.volumeInfo.title</MudText>
+                <MudText Typo="Typo.subtitle1">
+                    @String.Join(", ", bookitem.volumeInfo.authors)
+                </MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudExpansionPanels Class="mb-2">
+                    <MudExpansionPanel Text="Description">
+                        <MudText Typo="Typo.body2"> @bookitem.volumeInfo.description</MudText>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+                <MudText Typo="Typo.body2"><b>Category:</b> @String.Join(", ", bookitem.volumeInfo.categories)</MudText>
+                <MudText Typo="Typo.body2"><b>Page Count:</b> @bookitem.volumeInfo.pageCount</MudText>
+                <MudText Typo="Typo.body2"><b>Language:</b> @bookitem.volumeInfo.language</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Color="Color.Success" OnClick="OnAdd">Add to Library</MudButton>
+                <MudSpacer/>
+                <MudButton Color="Color.Error" OnClick="OnClose">Cancel</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+}
+
+@code {
+    [Parameter] public BookResp? book { get; set; }
+
+    private bool isOpen { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (book == default)
+        {
+            isOpen = false;
+        } else
+        {
+            isOpen = true;
+        }
+    }
+
+    private void OnAdd ()
+    {
+        if (book == null)
+        {
+            Console.Error.WriteLine("Book not found/empty/null");
+            return;
+        }
+
+        store.AddBook(book);
+
+        StateHasChanged();
+
+        book = null;
+        isOpen = false;
+    }
+
+    private void OnClose()
+    {
+        book = null;
+        isOpen = false;
+    }
+}
