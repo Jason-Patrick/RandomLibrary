@@ -1,7 +1,7 @@
 ﻿@using RandomLibrary.Utils
 @if (book != null)
 {
-    <MudCard Class=@classes>
+    <MudCard Class=@classes Style="@styles">
         <MudCardHeader>
             <CardHeaderContent>
                 <MudText Typo="Typo.h5">@book.title</MudText>
@@ -42,4 +42,6 @@
 
     [Parameter]
     public string? classes { get; set; } = "w-100 mx-0";
+    [Parameter]
+    public string? styles { get; set; }
 }

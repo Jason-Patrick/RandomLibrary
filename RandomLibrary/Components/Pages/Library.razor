@@ -2,11 +2,12 @@
 @using System.Text.Json
 @using RandomLibrary.Components.Shared
 @using RandomLibrary.Utils
+@using CommunityToolkit.Maui.Views;
 
 @inject LibraryStore store
 @inject PreferencesStore prefs
 
-<BookDetailsDialog book="detailBook" />
+<BookDetailsDialog @bind-book="detailBook" />
 
 @if (books.Count > 0)
 {
@@ -17,7 +18,7 @@
                 <MudCard Outlined="@showOutline(book)" Style="@outlineStyle(book)">
                     <MudCardHeader>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.subtitle1">@book.title</MudText>
+                            <MudText Style="font-style: italic;" Typo="Typo.subtitle1" GutterBottom>@book.title</MudText>
                             <MudText Typo="Typo.subtitle2">@book.authors[0]</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
@@ -26,35 +27,34 @@
                     <MudCardActions>
                         @if (!book.isRead)
                         {
-                            <MudTooltip Text="Mark as read">
-                                <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" OnClick="@(_ => OnMarkBookComplete(book.id))" />
-                            </MudTooltip>
+                            <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" OnClick="@(_ => OnMarkBookComplete(book.id))" Title="Mark as read" />
                         } 
                         else 
                         {
-                            <MudTooltip Text="Unmark as read">
-                                <MudIconButton Icon="@Icons.Material.Filled.Repeat" Color="Color.Secondary" OnClick="@(_ => OnMarkBookIncomplete(book.id))" />
-                            </MudTooltip>
+                            <MudIconButton Icon="@Icons.Material.Filled.Repeat" Color="Color.Secondary" OnClick="@(_ => OnMarkBookIncomplete(book.id))" Title="Unmark as read"/>
                         }
-                        <MudTooltip Text="Show more info">
-                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Primary" OnClick="@(_ => ShowDetails(book))"/>
-                        </MudTooltip>
+
+                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Primary" OnClick="@(_ => ShowDetails(book))" Title="Show more info"/>
                         <MudSpacer/>
-                        <MudTooltip Text="Delete book from library">
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(_ => OnRemoveBook(book.id))" />
-                        </MudTooltip>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(_ => OnRemoveBook(book.id))" Title="Delete book from library"/>
                     </MudCardActions>
                 </MudCard>
             </MudItem>
         }
     </MudGrid>
 }
+else
+{
+    <MudContainer MaxWidth="MaxWidth.Small">
+        <MudText Align="Align.Center" Typo="Typo.h1">Looks pretty empty here...</MudText>
+    </MudContainer>
+}
 
 @code {
     List<Book> books = [];
     string currentId = String.Empty;
 
-    Book? detailBook;
+    Book? detailBook = default;
 
     string outlineStyle(Book b) => "border-color: " + (b.isRead ? Colors.Green.Default : Colors.Blue.Default);
     bool showOutline(Book b) => b.isRead  || b.id == currentId;

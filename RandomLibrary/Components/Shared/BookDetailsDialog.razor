@@ -3,18 +3,19 @@
 
 @inject LibraryStore store
 
-@* <MudOverlay @bind-Visible="isOpen" DarkBackground="true" Absolute="true" /> *@
+<MudOverlay @bind-Visible="isOpen" DarkBackground="true" Absolute="true" OnClick="OnClose" />
 @if (book != null)
 {
     <BookCard book="book" classes="absolute z-100 mx-3 my-5 py-5 object-center" >
         <CardHeaderActions>
-            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error"/>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="OnClose"/>
         </CardHeaderActions>
     </BookCard>
 }
 
 @code {
     [Parameter] public Book? book { get; set; }
+    [Parameter] public EventCallback<Book> bookChanged { get; set; }
 
     private bool isOpen { get; set; }
 
@@ -34,6 +35,7 @@
     private void OnClose()
     {
         book = null;
+        bookChanged.InvokeAsync(null);
         isOpen = false;
     }
 }

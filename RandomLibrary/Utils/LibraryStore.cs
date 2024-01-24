@@ -21,10 +21,11 @@ namespace RandomLibrary.Utils
             if (!store.Exists("books"))
             {
                 library = new List<Book>();
-                return;
             }
 
             library = store.Get<List<Book>>("books");
+
+            LibraryUpdated = default!;
         }
 
 
