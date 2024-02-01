@@ -11,9 +11,29 @@
             <MudText Typo="Typo.h5">Random Library</MudText>
         </MudAppBar>
         <MudPaper Elevation="4">
-            <MudButtonGroup class="d-flex flex-grow-1" Color="Color.Tertiary" Variant="Variant.Outlined" Size="Size.Large" >
-                <MudButton StartIcon="@Icons.Material.Filled.MenuBook" Size="Size.Large" FullWidth="true" Href="/">Current Book</MudButton>
-                <MudButton StartIcon="@Icons.Material.Filled.LibraryBooks" Size="Size.Large" FullWidth="true" Href="/library">Library</MudButton>
+            <MudButtonGroup class="d-flex flex-grow-1" Size="Size.Large" OverrideStyles="false" >
+                <MudButton 
+                    StartIcon="@Icons.Material.Filled.MenuBook" 
+                    Size="Size.Large" 
+                    FullWidth="true" 
+                    Href="/"
+                    Color="Color.Tertiary"
+
+                    @ref="_home"
+                    OnClick="(e)=>HandleNavVariant(e, _home)">
+                        Current Book
+                </MudButton>
+                <MudButton 
+                    StartIcon="@Icons.Material.Filled.LibraryBooks" 
+                    Size="Size.Large" 
+                    FullWidth="true" 
+                    Href="/library" 
+                    Color="Color.Tertiary"
+
+                    @ref="_library"
+                    OnClick="(e)=>HandleNavVariant(e, _library)">
+                        Library
+                </MudButton>
             </MudButtonGroup>
 
         </MudPaper>
@@ -27,4 +47,30 @@
 </div>
 
 @code {
+    MudButton _home, _library;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _home.Variant = Variant.Filled;
+            _library.Variant = Variant.Outlined;
+            StateHasChanged();
+        }
+    }
+
+    void HandleNavVariant (MouseEventArgs e, MudButton btn)
+    {
+        if (_home.Equals(btn))
+        {
+            _home.Variant = Variant.Filled;
+            _library.Variant = Variant.Outlined;
+        }
+        else
+        {
+            _library.Variant = Variant.Filled;
+            _home.Variant = Variant.Outlined;
+        }
+        StateHasChanged();
+    }
 }
